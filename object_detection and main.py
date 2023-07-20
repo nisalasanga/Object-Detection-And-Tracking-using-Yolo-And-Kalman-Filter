@@ -10,7 +10,7 @@ model = YOLO('yolov8n.pt')
 video_path = "los_angeles.mp4"
 cap = cv2.VideoCapture(video_path)
 
-tracker = Tracker(150, 30, 5)
+tracker = Tracker(20, 30, 5)
 skip_frame_count = 0
 
 
