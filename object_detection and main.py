@@ -10,8 +10,8 @@ model = YOLO('yolov8n.pt')
 video_path = "los_angeles.mp4"
 cap = cv2.VideoCapture(video_path)
 
-tracker = Tracker(20, 30, 5)
-skip_frame_count = 0
+tracker = Tracker(100, 2, 5)
+
 
 
 # Loop through the video frames
@@ -23,9 +23,9 @@ while cap.isOpened():
         # Run YOLOv8 inference on the frame
         result = model(frame)
 
-
         boxes = result[0].boxes.cpu().numpy()                                  # get boxes on cpu in numpy
         centers = []
+        
         for box in boxes:
             if result[0].names[int(box.cls[0])] == 'car':                      # iterate boxes
                 (x1,y1,x2,y2) = box.xyxy[0].astype(int)                     # get corner points as int                                             # print boxes
@@ -50,12 +50,10 @@ while cap.isOpened():
                 for k in range(len(tracker.tracks[j].trace)):
                     x = int(tracker.tracks[j].trace[-1][0,0])
                     y = int(tracker.tracks[j].trace[-1][0,1])
-                    cv2.circle(frame,(x,y), 3, (0, 255, 0),-1)
                     cv2.circle(frame,(x,y), 6, (0, 255, 0),-1)
             
                 
                 cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)        # draw boxes on img
-        print(np.array(centers))
                  
         # Display the annotated frame
         cv2.imshow("YOLOv8 Inference", frame)
