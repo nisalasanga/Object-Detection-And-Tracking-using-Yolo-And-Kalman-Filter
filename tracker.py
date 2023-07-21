@@ -6,7 +6,7 @@ from collections import deque
 
 class Tracks(object):
 	"""docstring for Tracks"""
-	def __init__(self, detection, trackId):
+	def __init__(self, detection, trackId,label):
 		super(Tracks, self).__init__()
 		self.KF = KalmanFilter()
 		self.KF.predict()
@@ -15,6 +15,7 @@ class Tracks(object):
 		self.prediction = detection.reshape(1,2)
 		self.trackId = trackId
 		self.skipped_frames = 0
+		self.label = label
 
 	def predict(self,detection):
 		self.prediction = np.array(self.KF.predict()).reshape(1,2)
@@ -31,12 +32,15 @@ class Tracker(object):
 		self.trackId = 0
 		self.tracks = []
 
-	def update(self, detections):
+
+
+	def update(self, detections,label_cordinates):
 		if len(self.tracks) == 0:
 			for i in range(detections.shape[0]):
-				track = Tracks(detections[i], self.trackId)
+				track = Tracks(detections[i], self.trackId,label_cordinates[i])
 				self.trackId +=1
 				self.tracks.append(track)
+
 
 		N = len(self.tracks)
 		M = len(detections)
@@ -73,7 +77,7 @@ class Tracker(object):
 
 		for i in range(len(detections)):
 			if i not in assignment:
-				track = Tracks(detections[i], self.trackId)
+				track = Tracks(detections[i], self.trackId,label_cordinates[i])
 				self.trackId +=1
 				self.tracks.append(track)
 
