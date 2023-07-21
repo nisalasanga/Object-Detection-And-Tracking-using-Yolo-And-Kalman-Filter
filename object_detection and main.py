@@ -10,7 +10,7 @@ model = YOLO('yolov8n.pt')
 video_path = "los_angeles.mp4"
 cap = cv2.VideoCapture(video_path)
 
-tracker = Tracker(100, 2, 5)
+tracker = Tracker(150, 30, 5)
 
 
 
@@ -25,35 +25,35 @@ while cap.isOpened():
 
         boxes = result[0].boxes.cpu().numpy()                                  # get boxes on cpu in numpy
         centers = []
+
         
-        for box in boxes:
-            if result[0].names[int(box.cls[0])] == 'car':                      # iterate boxes
-                (x1,y1,x2,y2) = box.xyxy[0].astype(int)                     # get corner points as int                                             # print boxes
+        for j in range(len(boxes)):
+            if result[0].names[int(boxes[j].cls[0])] == 'car':                      # iterate boxes
+                (x1,y1,x2,y2) = boxes[j].xyxy[0].astype(int)                     # get corner points as int                                             # print boxes
                 cx = int((x1 + x2)/2)                                       # Mid point of x 
                 cy = int((y1 + y2)/2)                                       # Mid point of x 
-                cv2.circle(frame,(cx, cy), 5, (0, 0, 255),-1)               # Mid point Drawing
+                #cv2.circle(frame,(cx, cy), 5, (0, 0, 255),-1)               # Mid point Drawing
                 centers.append([cx,cy])
-                
-
+                cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)        # draw boxes on img
+ 
         centers = np.array(centers)
         tracker.update(centers)
-
 
         for j in range(len(tracker.tracks)):
             if (len(tracker.tracks[j].trace) > 1):
                 x = int(tracker.tracks[j].trace[-1][0,0]) 
                 y = int(tracker.tracks[j].trace[-1][0,1])
+
                 tl = (x-10,y-10)
                 br = (x+10,y+10)
                 cv2.rectangle(frame,tl,br,(0, 255, 0),1)
-                cv2.putText(frame,str(tracker.tracks[j].trackId), (x-10,y-20),0, 0.5, (0, 255, 0),2)
+                cv2.putText(frame,str(tracker.tracks[j].trackId), (x-10,y-20),0, 0.5, (0,255,250),2)
                 for k in range(len(tracker.tracks[j].trace)):
-                    x = int(tracker.tracks[j].trace[-1][0,0])
-                    y = int(tracker.tracks[j].trace[-1][0,1])
-                    cv2.circle(frame,(x,y), 6, (0, 255, 0),-1)
-            
-                
-                cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)        # draw boxes on img
+                    x = int(tracker.tracks[j].trace[k][0,0])
+                    y = int(tracker.tracks[j].trace[k][0,1])
+                    cv2.circle(frame,(x,y), 3, (255, 0, 0),-1)
+
+            #cv2.circle(frame,(int(data[j,i,0]),int(data[j,i,1])), 6, (0,0,0),-1)
                  
         # Display the annotated frame
         cv2.imshow("YOLOv8 Inference", frame)
