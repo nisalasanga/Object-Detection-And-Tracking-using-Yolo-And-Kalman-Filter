@@ -7,7 +7,7 @@ import numpy as np
 model = YOLO('yolov8n.pt')
 
 # Open the video file
-video_path = "5.mp4"
+video_path = "3.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Define the SORT tracker
