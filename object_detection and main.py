@@ -11,7 +11,7 @@ video_path = "los_angeles.mp4"
 cap = cv2.VideoCapture(video_path)
 
 # Initialize the SORT tracker
-sort_tracker = Sort(max_age=5, min_hits=5, iou_threshold=0.3)
+sort_tracker = Sort(max_age=5, min_hits=5, iou_threshold=0.2)
 
 
 # Loop through the video frames
